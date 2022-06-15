@@ -1,0 +1,68 @@
+﻿@page
+@model EventsFactory.Pages.Events.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Events</h1>
+
+<p>
+    <a class="btn btn-primary" role="button" asp-page="Create">Create New Event <i class="fa-solid fa-circle-plus"></i></a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Events[0].Location)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Events[0].EventDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Events[0].EventTime)
+            </th>
+            <th>
+                 @Html.DisplayNameFor(model => model.Events[0].Availability)
+            </th>
+            <th>
+                 @Html.DisplayNameFor(model => model.Events[0].NumberOfPeopleRequired)
+            </th>
+            <th>
+                 @Html.DisplayNameFor(model => model.Events[0].Participants)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Events) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Location)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EventDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EventTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Availability)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumberOfPeopleRequired)
+            </td>
+            <td>
+               @foreach (var participant in item.Participants)
+                {
+                    @(participant.Name + "  ")
+                }
+                </td>
+            <td>
+                <a class="btn btn-warning" role="button" asp-page="./Edit" asp-route-id="@item.EventId">Edit</a> |
+                @*<a asp-page="./Details" asp-route-id="@item.EventId">Details</a>*@ |
+                <a class="btn btn-danger" role="button" asp-page="./Delete" asp-route-id="@item.EventId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
