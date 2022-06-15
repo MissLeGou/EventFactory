@@ -8,6 +8,7 @@ namespace EventsFactory.Models
         public int ParticipantId { get; set; }
         public string Name { get; set; }
 
+        public ICollection<ParticipantAssignment> ParticipantAssignments { get; set; }
         public ICollection<Event> Events { get; set; }
     }
 }

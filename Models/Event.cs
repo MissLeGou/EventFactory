@@ -23,7 +23,7 @@ namespace EventsFactory.Models
 
         [Display(Name = "Participant Names")]
         [DisplayFormat(NullDisplayText = "")]
-        public ICollection<Participant> Participants { get; set; }
+        public ICollection<ParticipantAssignment> ParticipantAssignments { get; set; }
 
         [DisplayFormat(NullDisplayText = "Available")]
         public Availability? Availability { get; set; }

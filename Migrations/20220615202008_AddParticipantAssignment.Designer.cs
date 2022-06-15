@@ -4,6 +4,7 @@ using EventsFactory.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventsFactory.Migrations
 {
     [DbContext(typeof(EventPlannerContext))]
-    partial class EventPlannerContextModelSnapshot : ModelSnapshot
+    [Migration("20220615202008_AddParticipantAssignment")]
+    partial class AddParticipantAssignment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

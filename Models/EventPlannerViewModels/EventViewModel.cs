@@ -2,14 +2,10 @@
 
 namespace EventsFactory.Models.EventPlannerViewModels
 {
-    public class EventViewModel
+    public class AssignedParticipantData
     {
-        public int EventId { get; set; }
-        public string Location { get; set; }
-        public string EventDate { get; set; }
-        public string EventTime { get; set; }
-        public int NumberOfPeopleRequired { get; set; }
-        public ICollection<Participant> Participants { get; set; }
-        public Availability? Availability { get; set; }
+        public int ParticipantId { get; set; }
+        public string Name { get; set; }
+        public bool Assigned { get; set; }
     }
 }

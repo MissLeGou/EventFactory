@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using EventsFactory.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using EventsFactory.Data;
+using EventsFactory.Models.EventPlannerViewModels;
 
 namespace EventsFactory.Pages.Events
 {
@@ -24,48 +27,105 @@ namespace EventsFactory.Pages.Events
                 return NotFound();
             }
 
-            Event = await _context.Events.FirstOrDefaultAsync(m => m.EventId == id);
+            Event = await _context.Events.Include(p => p.ParticipantAssignments).AsNoTracking().FirstOrDefaultAsync(m => m.EventId == id);
 
             if (Event == null)
             {
                 return NotFound();
             }
+
+            PopulateAssignedParticipantData(Event);
+
+
             return Page();
+        }
+
+        private void PopulateAssignedParticipantData(Event Event)
+        {
+            var allParticipants = _context.Participants;
+            var eventParticipants = new HashSet<int>(Event.ParticipantAssignments.Select(p => p.ParticipantId));
+            var viewModel = new List<AssignedParticipantData>();
+            foreach (var participant in allParticipants)
+            {
+                viewModel.Add(new AssignedParticipantData
+                {
+                    ParticipantId = participant.ParticipantId,
+                    Name = participant.Name,
+                    Assigned = eventParticipants.Contains(participant.ParticipantId)
+                });
+            }
+            ViewData["Participants"] = viewModel;
         }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int? id, string[] selectedParticipants)
         {
-            if (!ModelState.IsValid)
+            if (id == null)
             {
-                return Page();
+                return NotFound();
             }
 
-            _context.Attach(Event).State = EntityState.Modified;
 
-            try
+            var eventToUpdate = await _context.Events.Include(e => e.ParticipantAssignments).AsNoTracking().FirstOrDefaultAsync(m => m.EventId == id);
+
+            if (await TryUpdateModelAsync(
+                eventToUpdate,
+                "",
+                e => e.Location, e => e.EventDate, e => e.EventTime, e => e.NumberOfPeopleRequired))
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EventExists(Event.EventId))
+                UpdateEventParticipants(selectedParticipants, eventToUpdate);
+                try
                 {
-                    return NotFound();
+                    await _context.SaveChangesAsync();
                 }
-                else
+                catch (DbUpdateException /* ex */)
                 {
-                    throw;
+                    //Log the error (uncomment ex variable name and write a log.)
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                        "Try again, and if the problem persists, " +
+                        "see your system administrator.");
                 }
+                //return RedirectToPage("./Index");
             }
 
+
+            UpdateEventParticipants(selectedParticipants, eventToUpdate);
+            PopulateAssignedParticipantData(eventToUpdate);
             return RedirectToPage("./Index");
         }
 
-        private bool EventExists(int id)
+        private void UpdateEventParticipants(string[] selectedParticipants, Event eventToUpdate)
         {
-            return _context.Events.Any(e => e.EventId == id);
+            if (selectedParticipants == null)
+            {
+                eventToUpdate.ParticipantAssignments = new List<ParticipantAssignment>();
+                return;
+            }
+
+            var selectedParticipantsHS = new HashSet<string>(selectedParticipants);
+            var eventParticipants = new HashSet<int>
+                (eventToUpdate.ParticipantAssignments.Select(p => p.Participant.ParticipantId));
+
+            foreach (var participant in _context.Participants)
+            {
+                if (selectedParticipantsHS.Contains(participant.ParticipantId.ToString()))
+                {
+                    if (!eventParticipants.Contains(participant.ParticipantId))
+                    {
+                        eventToUpdate.ParticipantAssignments.Add(new ParticipantAssignment { EventId = eventToUpdate.EventId, ParticipantId = participant.ParticipantId});
+                    }
+                }
+                else
+                {
+
+                    if (eventParticipants.Contains(participant.ParticipantId))
+                    {
+                        ParticipantAssignment participantToRemove = eventToUpdate.ParticipantAssignments.FirstOrDefault(e => e.ParticipantId == participant.ParticipantId);
+                        _context.Remove(participantToRemove);
+                    }
+                }
+            }
         }
     }
 }

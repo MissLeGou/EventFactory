@@ -5,7 +5,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Events</h1>
+<h1>Dashboard</h1>
 
 <p>
     <a class="btn btn-primary" role="button" asp-page="Create">Create New Event <i class="fa-solid fa-circle-plus"></i></a>
@@ -29,7 +29,7 @@
                  @Html.DisplayNameFor(model => model.Events[0].NumberOfPeopleRequired)
             </th>
             <th>
-                 @Html.DisplayNameFor(model => model.Events[0].Participants)
+                 @Html.DisplayNameFor(model => model.Events[0].ParticipantAssignments)
             </th>
         </tr>
     </thead>
@@ -52,9 +52,9 @@
                 @Html.DisplayFor(modelItem => item.NumberOfPeopleRequired)
             </td>
             <td>
-               @foreach (var participant in item.Participants)
+               @foreach (var p in item.ParticipantAssignments)
                 {
-                    @(participant.Name + "  ")
+                    @p.Participant.Name <br />
                 }
             </td>
             <td>

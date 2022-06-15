@@ -20,7 +20,8 @@ namespace EventsFactory.Pages.Events
 
         public async Task OnGetAsync()
         {
-            Events = await _context.Events.Include(e => e.Participants).ToListAsync();
+            Events = await _context.Events.Include(e => e.ParticipantAssignments).ThenInclude(e => e.Participant).AsNoTracking().OrderBy(e => e.EventDate).ToListAsync();
+            
         }
     }
 }
