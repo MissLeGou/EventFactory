@@ -70,23 +70,23 @@ namespace EventsFactory.Migrations
 
             modelBuilder.Entity("EventsFactory.Models.ParticipantAssignment", b =>
                 {
-                    b.Property<int>("ParticipantId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ParticipantId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("EventId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ParticipantId1")
+                    b.Property<int>("ParticipantId")
                         .HasColumnType("int");
 
-                    b.HasKey("ParticipantId");
+                    b.HasKey("Id");
 
                     b.HasIndex("EventId");
 
-                    b.HasIndex("ParticipantId1");
+                    b.HasIndex("ParticipantId");
 
                     b.ToTable("ParticipantAssignment");
                 });
@@ -108,7 +108,7 @@ namespace EventsFactory.Migrations
 
                     b.HasOne("EventsFactory.Models.Participant", "Participant")
                         .WithMany("ParticipantAssignments")
-                        .HasForeignKey("ParticipantId1")
+                        .HasForeignKey("ParticipantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

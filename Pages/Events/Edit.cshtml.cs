@@ -67,7 +67,7 @@ namespace EventsFactory.Pages.Events
             }
 
 
-            var eventToUpdate = await _context.Events.Include(e => e.ParticipantAssignments).AsNoTracking().FirstOrDefaultAsync(m => m.EventId == id);
+            var eventToUpdate = await _context.Events.Include(e => e.ParticipantAssignments).ThenInclude(p => p.Participant).FirstOrDefaultAsync(m => m.EventId == id);
 
             if (await TryUpdateModelAsync(
                 eventToUpdate,
