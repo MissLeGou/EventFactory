@@ -50,7 +50,7 @@ namespace EventsFactory.Pages.Events
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!StudentExists(Event.EventId))
+                if (!EventExists(Event.EventId))
                 {
                     return NotFound();
                 }
@@ -63,7 +63,7 @@ namespace EventsFactory.Pages.Events
             return RedirectToPage("./Index");
         }
 
-        private bool StudentExists(int id)
+        private bool EventExists(int id)
         {
             return _context.Events.Any(e => e.EventId == id);
         }
