@@ -1,12 +1,15 @@
 ﻿@page
-@model EventsFactory.Pages.Events.IndexModel
+@model EventsFactory.Pages.DashboardEvents.IndexModel
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Events</h1>
+<h1>Dashboard</h1>
 
+<p>
+    <a class="btn btn-primary" role="button" asp-page="Create">Create New Event <i class="fa-solid fa-circle-plus"></i></a>
+</p>
 <table class="table">
     <thead>
         <tr>
@@ -55,7 +58,8 @@
                 }
             </td>
             <td>
-                <a class="btn btn-info" role="button" asp-page="./Edit" asp-route-id="@item.EventId">Book</a>
+                <a class="btn btn-warning" role="button" asp-page="./Edit" asp-route-id="@item.EventId">Edit</a> ||
+                <a class="btn btn-danger" role="button" asp-page="./Delete" asp-route-id="@item.EventId">Delete</a>
             </td>
         </tr>
 }
