@@ -62,7 +62,7 @@ namespace EventsFactory.Pages.DashboardEvents
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync(int? id, string[] selectedParticipants, Event @event)
+        public async Task<IActionResult> OnPostAsync(int? id, string[] selectedParticipants)
         {
             if (id == null)
             {
@@ -71,14 +71,10 @@ namespace EventsFactory.Pages.DashboardEvents
 
 
             var eventToUpdate = await _context.Events.Include(e => e.ParticipantAssignments).ThenInclude(p => p.Participant).FirstOrDefaultAsync(m => m.EventId == id);
-            eventToUpdate.Location = @event.Location;
-            eventToUpdate.EventDate = @event.EventDate;
-            eventToUpdate.EventTime = @event.EventTime;
-            eventToUpdate.NumberOfPeopleRequired = @event.NumberOfPeopleRequired;
 
             if (await TryUpdateModelAsync(
                 eventToUpdate,
-                "",
+                "Event",
                 e => e.Location, e => e.EventDate, e => e.EventTime, e => e.NumberOfPeopleRequired))
             {
                 UpdateEventParticipants(selectedParticipants, eventToUpdate);
