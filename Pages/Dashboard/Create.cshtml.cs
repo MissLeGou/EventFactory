@@ -6,9 +6,9 @@ namespace EventsFactory.Pages.DashboardEvents
 {
     public class CreateModel : PageModel
     {
-        private readonly EventsFactory.Data.EventPlannerContext _context;
+        private readonly Data.EventPlannerContext _context;
 
-        public CreateModel(EventsFactory.Data.EventPlannerContext context)
+        public CreateModel(Data.EventPlannerContext context)
         {
             _context = context;
         }

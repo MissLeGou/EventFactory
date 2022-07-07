@@ -7,7 +7,7 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Book</h1>
 
 <h4>Event</h4>
 <hr />
@@ -43,10 +43,13 @@
                 </dd>
                 </dl>
             <div class="form-group">
-                <label asp-for="Event.ParticipantAssignments" class="control-label"></label>
-                <input asp-for="Event.ParticipantAssignments.Select(p => p.Participant.Name).First().ToString()" class="form-control" />
-                <span asp-validation-for="Event.ParticipantAssignments" class="text-danger"></span>
+                 <div class="form-group">
+                <label asp-for="Participant.Name" class="control-label"></label>
+                <input asp-for="Participant.Name" class="form-control" />
+                <span asp-validation-for="Participant.Name" class="text-danger"></span>
             </div>
+            </div>
+            <br />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

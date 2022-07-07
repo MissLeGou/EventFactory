@@ -2,17 +2,15 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using EventsFactory.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using EventsFactory.Data;
 using EventsFactory.Models.EventPlannerViewModels;
 
 namespace EventsFactory.Pages.Events
 {
     public class EditModel : PageModel
     {
-        private readonly EventsFactory.Data.EventPlannerContext _context;
+        private readonly Data.EventPlannerContext _context;
 
-        public EditModel(EventsFactory.Data.EventPlannerContext context)
+        public EditModel(Data.EventPlannerContext context)
         {
             _context = context;
         }
@@ -37,67 +35,41 @@ namespace EventsFactory.Pages.Events
             return Page();
         }
 
+        [BindProperty]
+        public Participant Participant { get; set; }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see https://aka.ms/RazorPagesCRUD.
-
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
-        public async Task<IActionResult> OnPostAsync(int? id, string[] newParticipants)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null)
+
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return Page();
             }
 
-            var eventToUpdate = await _context.Events.Include(e => e.ParticipantAssignments).ThenInclude(p => p.Participant).FirstOrDefaultAsync(m => m.EventId == id);
+            var selectedEvent = Event;
 
-            if (await TryUpdateModelAsync(
-                eventToUpdate,
-                "",
-                e => e.Location, e => e.EventDate, e => e.EventTime, e => e.NumberOfPeopleRequired))
+            Participant.Events = new List<Event>
             {
-                UpdateEventParticipants(newParticipants, eventToUpdate);
-                try
-                {
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateException /* ex */)
-                {
-                    //Log the error (uncomment ex variable name and write a log.)
-                    ModelState.AddModelError("", "Unable to save changes. " +
-                        "Try again, and if the problem persists, " +
-                        "see your system administrator.");
-                }
-            }
+                _context.Events.First(e => e.EventId == selectedEvent.EventId)
+            };
 
 
-            UpdateEventParticipants(newParticipants, eventToUpdate);
-            
+            Participant.ParticipantAssignments = new List<ParticipantAssignment> {
+                new ParticipantAssignment
+                {
+                    EventId = selectedEvent.EventId,
+                    Participant = Participant,
+                }
+            };
+
+            _context.Participants.Add(Participant);
+            await _context.SaveChangesAsync();
+
             return RedirectToPage("./Index");
-        }
 
-        private void UpdateEventParticipants(string[] newParticipants, Event eventToUpdate)
-        {
-            if (newParticipants == null)
-            {
-                eventToUpdate.ParticipantAssignments = new List<ParticipantAssignment>();
-                return;
-            }
-
-            var newParticipantsHS = new HashSet<string>(newParticipants);
-            var eventParticipants = new HashSet<int>
-                (eventToUpdate.ParticipantAssignments.Select(p => p.Participant.ParticipantId));
-
-            foreach (var participant in _context.Participants)
-            {
-                if (newParticipantsHS.Contains(participant.ParticipantId.ToString()))
-                {
-                    if (!eventParticipants.Contains(participant.ParticipantId))
-                    {
-                        eventToUpdate.ParticipantAssignments.Add(new ParticipantAssignment { EventId = eventToUpdate.EventId, ParticipantId = participant.ParticipantId });
-                    }
-                }
-            }
         }
     }
 }
